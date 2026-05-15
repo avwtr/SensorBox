@@ -1,0 +1,59 @@
+# Sensor Box OS
+
+Open-source desktop companion for the **EE Sensor Box** — a USB environmental monitor that reports temperature, humidity, pressure, and volatile organic compounds (VOC index).
+
+Built with [Tauri 2](https://v2.tauri.app/) + React + TypeScript. Serial I/O runs in Rust; parsing matches the [Experiment Engine](https://github.com) `SensorService` format so existing firmware works unchanged.
+
+## Features
+
+- **Connect** over USB serial (115200 baud)
+- **Live readings** — temperature (°C), humidity (% RH), pressure (hPa), VOC index
+- **Timed sessions** — start/stop recording (~1 sample/sec)
+- **Export** — CSV or JSON
+
+## Requirements
+
+- [Node.js](https://nodejs.org/) 18+
+- [Rust](https://www.rust-lang.org/tools/install) 1.70+
+- macOS, Windows, or Linux
+
+## Development
+
+```bash
+npm install
+npm run tauri dev
+```
+
+## Build installers
+
+```bash
+npm run tauri build
+```
+
+Artifacts appear under `src-tauri/target/release/bundle/`.
+
+## Device protocol
+
+Firmware sends tab-separated lines, for example:
+
+```text
+tempF:72.5	humidity:45.2	pressure:0.998	lux:1234	voc:125
+```
+
+JSON lines are also supported. See `src/lib/sensorParser.ts` for full parsing rules (°F→°C, atm→hPa).
+
+## Project layout
+
+| Path | Purpose |
+|------|---------|
+| `src/lib/sensorParser.ts` | Firmware line parser (port from BIGSIS) |
+| `src/hooks/useSensorBox.ts` | Tauri serial commands + live events |
+| `src-tauri/src/serial.rs` | Port list, connect, read loop |
+
+## Contributing
+
+Contributions welcome. Keep parser compatibility with EE Sensor Box firmware unless documenting a breaking change.
+
+## License
+
+MIT

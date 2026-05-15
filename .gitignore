@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Generated icon sources (keep app-icon.png for tauri icon CLI)
+app-icon-source.png
+
+# Build
+dist/
+src-tauri/target/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Env
+.env
+.env.*
