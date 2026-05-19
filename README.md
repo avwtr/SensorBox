@@ -1,5 +1,13 @@
 # Sensor Box OS
 
+<p align="center">
+  <img
+    src="public/hero.png"
+    alt="Sensor Box OS — desktop app for the EE Sensor Box"
+    width="520"
+  />
+</p>
+
 Open-source desktop app for the [**EE Sensor Box**](https://shop.experimentengine.ai/products/sensor-box) — a USB environmental monitor that reports temperature, humidity, pressure, and VOC index.
 
 ## Download the app (macOS)
