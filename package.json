@@ -2,7 +2,7 @@
   "name": "sensorbox-os",
   "private": true,
   "version": "0.1.0",
-  "description": "Open-source desktop app for EE Sensor Box environmental monitoring",
+  "description": "Open-source desktop app for EE Sensor Box — run from source via GitHub until signed macOS installers are available",
   "type": "module",
   "scripts": {
     "dev": "vite",

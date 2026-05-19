@@ -1,3 +1,5 @@
+# Builds unsigned macOS DMGs for CI/testing. Not recommended for end users until
+# Apple Developer code signing + notarization is configured. See README.md.
 name: Release Sensor Box OS
 
 on:

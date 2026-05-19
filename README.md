@@ -10,28 +10,45 @@
 
 Open-source desktop app for the [**EE Sensor Box**](https://shop.experimentengine.ai/products/sensor-box) — a USB environmental monitor that reports temperature, humidity, pressure, and VOC index.
 
-## Download the app (macOS)
+## How to run the app (today)
 
-**You do not need Node, Rust, or the command line** — grab a pre-built installer:
+**Right now, the supported way to use Sensor Box OS is to run it locally from this GitHub repo.** There is not yet a signed, one-click Mac installer we can recommend for everyone.
 
-**[→ Latest release on GitHub](https://github.com/avwtr/SensorBox/releases/latest)**
+You will need:
 
-| Your Mac | Download |
-|----------|----------|
-| Apple Silicon (M1/M2/M3/M4) | [SensorBox-0.1.0-macos-aarch64.dmg](https://github.com/avwtr/SensorBox/releases/download/v0.1.0/SensorBox-0.1.0-macos-aarch64.dmg) |
-| Intel | [SensorBox-0.1.0-macos-x64.dmg](https://github.com/avwtr/SensorBox/releases/download/v0.1.0/SensorBox-0.1.0-macos-x64.dmg) |
+- [Node.js](https://nodejs.org/) 18+
+- [Rust](https://www.rust-lang.org/tools/install) 1.77+
+- macOS, Windows, or Linux
+- An EE Sensor Box on USB (data cable, not charge-only)
 
-Not sure which chip you have? **Apple menu → About This Mac** — “Chip” means Apple Silicon; “Processor” with Intel in the name means Intel.
+### Steps
 
-### Install
+```bash
+git clone https://github.com/avwtr/SensorBox.git
+cd SensorBox
+npm install
+npm run tauri dev
+```
 
-1. Open the `.dmg` you downloaded.
-2. Drag **Sensor Box** into **Applications**.
-3. Open it from Applications (or Spotlight).
+The desktop window opens. Use it like a normal app while that command is running.
 
-On first launch, macOS may block the app because it is not signed with an Apple Developer ID. If you see that warning, open **System Settings → Privacy & Security** and click **Open Anyway**, then launch the app again.
+To build a local `.app` / `.dmg` on your own machine (still unsigned):
 
-**You need:** macOS and an EE Sensor Box connected via USB (data cable, not charge-only).
+```bash
+npm ci
+npm run tauri build
+```
+
+Output is under `src-tauri/target/release/bundle/`.
+
+### Pre-built downloads (coming soon)
+
+We are working on an [**Apple Developer**](https://developer.apple.com/programs/) membership so we can **code-sign and notarize** macOS builds. After that, you’ll be able to download a `.dmg` from [GitHub Releases](https://github.com/avwtr/SensorBox/releases) or our site and open it without macOS blocking it.
+
+Until then:
+
+- **Do not rely on the release DMGs for friends or customers** — unsigned builds often show **“damaged”** or **“can’t be opened”** on other Macs (Gatekeeper), even when they work on yours.
+- Experiment Engine’s “Download for Mac” button may stay disabled or point here until signed installers are ready.
 
 ---
 
@@ -67,43 +84,25 @@ On first launch, macOS may block the app because it is not signed with an Apple 
 3. **Record** a timed session with live values and charts.
 4. **Export** the session as **CSV** or **JSON** to a folder on your computer.
 
+Built with [Tauri 2](https://v2.tauri.app/), React, and TypeScript. Serial I/O runs in Rust; parsing matches Experiment Engine firmware.
+
 ---
 
-## For developers
+## For maintainers
 
-Want to run from source or build installers yourself? You’ll need [Node.js](https://nodejs.org/) 18+, [Rust](https://www.rust-lang.org/tools/install) 1.77+, and macOS, Windows, or Linux.
+### Publish a GitHub Release (unsigned CI builds)
 
-### Run locally
+CI builds macOS DMGs on tag push for testing and for the future signed pipeline. Asset names must stay `SensorBox-{version}-macos-aarch64.dmg` and `SensorBox-{version}-macos-x64.dmg` for the Experiment Engine site.
 
-```bash
-git clone https://github.com/avwtr/SensorBox.git
-cd SensorBox
-npm install
-npm run tauri dev
-```
-
-### Build an installer
-
-```bash
-npm ci
-npm run tauri build
-```
-
-Output is under `src-tauri/target/release/bundle/dmg/`.
-
-### Publish a new release
-
-1. Bump `version` in `src-tauri/tauri.conf.json` (and update download URLs on the Experiment Engine site if the version changes).
-2. Tag and push — GitHub Actions uploads both macOS DMGs:
+1. Bump `version` in `src-tauri/tauri.conf.json`.
+2. Tag and push:
 
    ```bash
    git tag v0.2.0
    git push origin v0.2.0
    ```
 
-Release assets must be named `SensorBox-{version}-macos-aarch64.dmg` and `SensorBox-{version}-macos-x64.dmg` for the marketing site. See `.github/workflows/release.yml`.
-
-Built with [Tauri 2](https://v2.tauri.app/), React, and TypeScript. Serial I/O runs in Rust; parsing matches Experiment Engine firmware.
+See `.github/workflows/release.yml`.
 
 ### Device protocol
 
@@ -130,7 +129,7 @@ JSON lines are also supported. See `src/lib/sensorParser.ts` for parsing (°F→
 
 - [Get a Sensor Box](https://shop.experimentengine.ai/products/sensor-box)
 - [Experiment Engine](https://www.experimentengine.ai/)
-- [GitHub Releases](https://github.com/avwtr/SensorBox/releases)
+- [Source on GitHub](https://github.com/avwtr/SensorBox)
 
 ## Contributing
 
