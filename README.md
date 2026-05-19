@@ -31,13 +31,44 @@ npm run tauri dev
 
 The desktop window opens with hot reload for the UI.
 
+## Download (macOS)
+
+Pre-built installers: [GitHub Releases](https://github.com/avwtr/SensorBox/releases).
+
+| Mac type | File |
+|----------|------|
+| Apple Silicon | `SensorBox-0.1.0-macos-aarch64.dmg` |
+| Intel | `SensorBox-0.1.0-macos-x64.dmg` |
+
+Direct links (v0.1.0):
+
+- [Apple Silicon](https://github.com/avwtr/SensorBox/releases/download/v0.1.0/SensorBox-0.1.0-macos-aarch64.dmg)
+- [Intel](https://github.com/avwtr/SensorBox/releases/download/v0.1.0/SensorBox-0.1.0-macos-x64.dmg)
+
+Unsigned builds may require **System Settings → Privacy & Security → Open Anyway** on first launch.
+
+### Cut a new release
+
+1. Bump `version` in `src-tauri/tauri.conf.json` (and the Experiment Engine site if download URLs change).
+2. Commit, tag, and push:
+
+   ```bash
+   git tag v0.1.0
+   git push origin v0.1.0
+   ```
+
+3. GitHub Actions (`.github/workflows/release.yml`) builds both macOS DMGs and attaches them to the release.
+
+Asset names must stay `SensorBox-{version}-macos-aarch64.dmg` and `SensorBox-{version}-macos-x64.dmg` for the marketing site download links.
+
 ## Build an installer
 
 ```bash
+npm ci
 npm run tauri build
 ```
 
-Installers and binaries are written under `src-tauri/target/release/bundle/`.
+Installers and binaries are written under `src-tauri/target/release/bundle/dmg/`. Rename the DMG to match the release contract before uploading manually.
 
 ## Using the app
 

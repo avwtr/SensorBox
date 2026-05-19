@@ -1,0 +1,96 @@
+name: Release Sensor Box OS
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos-aarch64:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Tauri (Apple Silicon)
+        run: npm run tauri build
+
+      - name: Rename DMG for release
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          DMG=$(find src-tauri/target/release/bundle/dmg -name '*.dmg' | head -1)
+          test -n "$DMG" || (echo "No DMG found" && exit 1)
+          cp "$DMG" "SensorBox-${VERSION}-macos-aarch64.dmg"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-aarch64
+          path: SensorBox-*-macos-aarch64.dmg
+
+  # Intel: cross-compile on Apple Silicon (macos-13 Intel runners are deprecated).
+  build-macos-x64:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Tauri (Intel)
+        run: npm run tauri build -- --target x86_64-apple-darwin
+
+      - name: Rename DMG for release
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          DMG=$(find src-tauri/target/x86_64-apple-darwin/release/bundle/dmg -name '*.dmg' 2>/dev/null | head -1)
+          if [ -z "$DMG" ]; then
+            DMG=$(find src-tauri/target/release/bundle/dmg -name '*.dmg' | head -1)
+          fi
+          test -n "$DMG" || (echo "No DMG found" && find src-tauri/target -name '*.dmg' && exit 1)
+          cp "$DMG" "SensorBox-${VERSION}-macos-x64.dmg"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-x64
+          path: SensorBox-*-macos-x64.dmg
+
+  release:
+    needs: [build-macos-aarch64, build-macos-x64]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Verify release assets
+        run: |
+          ls -la dist/
+          test -f dist/SensorBox-*-macos-aarch64.dmg
+          test -f dist/SensorBox-*-macos-x64.dmg
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: dist/*.dmg
