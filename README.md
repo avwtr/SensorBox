@@ -8,7 +8,58 @@
   />
 </p>
 
-Open-source desktop app for the [**EE Sensor Box**](https://shop.experimentengine.ai/products/sensor-box) — a USB environmental monitor that reports temperature, humidity, pressure, and VOC index.
+Open-source desktop app for the [**HDX Sensor Box**](https://shop.experimentengine.ai/products/sensor-box) — a compact USB environmental monitor from [Experiment Engine](https://www.experimentengine.ai/). **Sensor Box OS** lets you visualize, monitor, and record sensor data on your computer without the full Experiment Engine platform.
+
+---
+
+## The hardware
+
+The **HDX Sensor Box** is a bench-top environmental sensor built on **ESP32-S3** with a modular enclosure. It streams real-time **temperature**, **humidity**, **VOC (air quality)**, and **atmospheric pressure** over USB so you can tie conditions to experiments, reproducibility, and variability.
+
+In the full **Experiment Engine** workflow, telemetry can sync with procedural logs, video, and experiment context. **Sensor Box OS** (this repo) is the standalone path: plug in, record sessions, export CSV/JSON.
+
+<p align="center">
+  <img
+    src="docs/images/sensor-box-assembled.png"
+    alt="Assembled HDX Sensor Box with crest lid"
+    width="340"
+  />
+  &nbsp;
+  <img
+    src="docs/images/sensor-box-innards.png"
+    alt="HDX Sensor Box enclosure parts and internal electronics"
+    width="340"
+  />
+</p>
+
+<p align="center"><sub>Assembled unit (left) and enclosure / electronics layout (right).</sub></p>
+
+### Features
+
+- Native **Experiment Engine** integration (ecosystem)
+- **USB-powered** — included Micro USB → USB-A cable; plug-and-play on macOS, Windows, or Linux
+- Real-time environmental telemetry at **115200 baud**
+- **ESP32-S3** architecture with room for modular expansion
+- Compact bench-top design
+
+### Get a Sensor Box
+
+Purchase a complete assembled unit (electronics + enclosure) for **[$99](https://shop.experimentengine.ai/products/sensor-box)** — recommended if you want a tested device ready to connect.
+
+### 3D-print the enclosure (STL)
+
+We publish **V1 enclosure STLs** under [`hardware/stl/`](hardware/stl/) for makers who want to print their own shell. See [`hardware/README.md`](hardware/README.md) for the parts list (bottom, middle with vents, lid with crest, dowel pins).
+
+| Part | Download |
+|------|----------|
+| Bottom | [`sensor-box-v1-bottom.stl`](hardware/stl/sensor-box-v1-bottom.stl) |
+| Middle (vents) | [`sensor-box-v1-middle.stl`](hardware/stl/sensor-box-v1-middle.stl) |
+| Lid (crest) | [`sensor-box-v1-lid-crest.stl`](hardware/stl/sensor-box-v1-lid-crest.stl) |
+| Dowel pins | [`sensor-box-v1-dowel-pins.stl`](hardware/stl/sensor-box-v1-dowel-pins.stl) |
+
+> **Note:** STL files are large (~32 MB total). Clone with patience, or use [GitHub’s download ZIP](https://github.com/avwtr/SensorBox/archive/refs/heads/main.zip) if you only need the CAD. Electronics and firmware are not included in the STLs.
+
+---
 
 ## How to run the app (today)
 
@@ -122,13 +173,16 @@ JSON lines are also supported. See `src/lib/sensorParser.ts` for parsing (°F→
 | `src/hooks/useSensorBox.ts` | Serial ports, connect, live readings |
 | `src/lib/sensorParser.ts` | Firmware line parser |
 | `src-tauri/src/serial.rs` | Rust serial read loop |
+| `hardware/stl/` | 3D-printable enclosure (V1) |
+| `docs/images/` | Product photos for docs |
 
 ---
 
 ## Links
 
-- [Get a Sensor Box](https://shop.experimentengine.ai/products/sensor-box)
+- [Get a Sensor Box · $99](https://shop.experimentengine.ai/products/sensor-box)
 - [Experiment Engine](https://www.experimentengine.ai/)
+- [Enclosure STLs](hardware/stl/)
 - [Source on GitHub](https://github.com/avwtr/SensorBox)
 
 ## Contributing
