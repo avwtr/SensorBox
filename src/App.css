@@ -162,7 +162,11 @@ body {
 }
 
 .app-footer {
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.15rem 0.35rem;
   max-width: var(--content-w);
   margin: 0 auto;
   width: 100%;
@@ -445,19 +449,15 @@ button {
   font-size: 0.88rem;
 }
 
-.cloud-note {
+.export-hint {
   margin: -0.25rem 0 0;
   font-size: 0.88rem;
   color: var(--muted);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .screen-inner > .banner-error {
   margin: -0.25rem 0 0;
-}
-
-.cloud-note-ok {
-  color: var(--mint);
 }
 
 /* Session */

@@ -3,6 +3,7 @@ import { openExternal } from "../lib/openExternal";
 
 const SHOP_URL = "https://shop.experimentengine.ai/products/sensor-box";
 const EE_URL = "https://www.experimentengine.ai/";
+const GITHUB_URL = "https://github.com/avwtr/SensorBox";
 
 function ExternalLink({
   href,
@@ -24,14 +25,22 @@ function ExternalLink({
   );
 }
 
+function FooterSep() {
+  return (
+    <span className="footer-dot" aria-hidden>
+      ·
+    </span>
+  );
+}
+
 export function AppFooter({ compact = false }: { compact?: boolean }) {
   return (
     <footer className={`app-footer ${compact ? "compact" : ""}`}>
       <ExternalLink href={SHOP_URL}>Get Sensor Box · $99</ExternalLink>
-      <span className="footer-dot" aria-hidden>
-        ·
-      </span>
+      <FooterSep />
       <ExternalLink href={EE_URL}>Experiment Engine</ExternalLink>
+      <FooterSep />
+      <ExternalLink href={GITHUB_URL}>GitHub</ExternalLink>
     </footer>
   );
 }
