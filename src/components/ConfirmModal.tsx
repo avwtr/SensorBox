@@ -25,18 +25,15 @@ export function ConfirmModal({
         className="modal"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="modal-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 id="modal-title" className="modal-title">
-          {title}
-        </h2>
+        <h2 className="modal-title">{title}</h2>
         <p className="modal-message">{message}</p>
         <div className="modal-actions">
-          <button type="button" className="secondary" onClick={onCancel}>
+          <button type="button" className="btn-secondary" onClick={onCancel}>
             {cancelLabel}
           </button>
-          <button type="button" className="danger" onClick={onConfirm}>
+          <button type="button" className="btn-primary" onClick={onConfirm}>
             {confirmLabel}
           </button>
         </div>

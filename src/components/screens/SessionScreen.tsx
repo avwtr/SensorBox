@@ -12,23 +12,22 @@ import type { RecordingSession, SensorReading } from "../../lib/types";
 const CHART_COLORS: Record<SensorMetric, string> = {
   temperature: "#A0FFDD",
   humidity: "#ffffff",
-  pressure: "rgba(160, 255, 221, 0.65)",
-  volatileGas: "rgba(255, 255, 255, 0.75)",
+  pressure: "rgba(160, 255, 221, 0.5)",
+  volatileGas: "rgba(255, 255, 255, 0.7)",
 };
+
+function formatDuration(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
 
 interface Props {
   session: RecordingSession;
   liveReading: SensorReading | null;
   elapsedMs: number;
   onConclude: () => void;
-}
-
-function formatDuration(ms: number): string {
-  const totalSec = Math.floor(ms / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  return [h, m, s].map((n) => String(n).padStart(2, "0")).join(":");
 }
 
 export function SessionScreen({
@@ -39,27 +38,26 @@ export function SessionScreen({
 }: Props) {
   const [showConfirm, setShowConfirm] = useState(false);
   const metrics = session.selectedMetrics;
-
   const metricConfigs = useMemo(
     () => ALL_METRICS.filter((m) => metrics.includes(m.key)),
     [metrics],
   );
-
   const readings = session.readings;
 
   return (
-    <div className="screen screen-session">
-      <div className="session-topbar">
-        <div>
-          <p className="eyebrow">Recording</p>
-          <p className="timer">{formatDuration(elapsedMs)}</p>
-        </div>
-        <button type="button" className="danger" onClick={() => setShowConfirm(true)}>
-          Conclude
+    <div className="screen screen-inner screen-session">
+      <div className="session-head">
+        <p className="session-time">{formatDuration(elapsedMs)}</p>
+        <button
+          type="button"
+          className="btn-stop"
+          onClick={() => setShowConfirm(true)}
+        >
+          Stop
         </button>
       </div>
 
-      <div className="stats-row">
+      <div className="live-grid">
         {metricConfigs.map((m) => {
           const values = readings.map((r) => readingValue(r, m.key));
           if (liveReading) {
@@ -68,41 +66,28 @@ export function SessionScreen({
           }
           const stats = computeStats(values);
           return (
-            <article key={m.key} className="stat-card">
-              <h3 className="stat-label">{m.label}</h3>
-              <p className="stat-current">
+            <div key={m.key} className="live-cell">
+              <span className="live-label">{m.label}</span>
+              <span className="live-value">
                 {fmtStat(stats.current)}
-                <span className="stat-unit">{m.unit}</span>
-              </p>
-              <dl className="stat-meta">
-                <div>
-                  <dt>Min</dt>
-                  <dd>{fmtStat(stats.min)}</dd>
-                </div>
-                <div>
-                  <dt>Avg</dt>
-                  <dd>{fmtStat(stats.avg)}</dd>
-                </div>
-                <div>
-                  <dt>Max</dt>
-                  <dd>{fmtStat(stats.max)}</dd>
-                </div>
-              </dl>
-            </article>
+                <small>{m.unit}</small>
+              </span>
+              <span className="live-range">
+                {fmtStat(stats.min)} – {fmtStat(stats.max)} avg {fmtStat(stats.avg)}
+              </span>
+            </div>
           );
         })}
       </div>
 
-      <div className="charts-stack">
+      <div className="charts">
         {metricConfigs.map((m) => (
           <SensorChart
             key={m.key}
             metric={m.key}
             label={m.label}
             unit={m.unit}
-            readings={
-              liveReading ? [...readings, liveReading] : readings
-            }
+            readings={liveReading ? [...readings, liveReading] : readings}
             sessionStart={session.startedAt}
             color={CHART_COLORS[m.key]}
           />
@@ -111,9 +96,9 @@ export function SessionScreen({
 
       <ConfirmModal
         open={showConfirm}
-        title="Conclude session?"
-        message="This will stop recording. You can export your data on the next screen."
-        confirmLabel="Conclude session"
+        title="Stop recording?"
+        message="Your session will be saved and you can export the data."
+        confirmLabel="Stop"
         onConfirm={() => {
           setShowConfirm(false);
           onConclude();

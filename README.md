@@ -6,10 +6,20 @@ Built with [Tauri 2](https://v2.tauri.app/) + React + TypeScript. Serial I/O run
 
 ## Features
 
-- **Connect** over USB serial (115200 baud)
+- **Welcome** hero landing with Heterodox Labs branding
+- **Connect** over USB serial (115200 baud) with auto-detect
 - **Live readings** — temperature (°C), humidity (% RH), pressure (hPa), VOC index
 - **Timed sessions** — start/stop recording (~1 sample/sec)
-- **Export** — CSV or JSON
+- **Export** — CSV or JSON + optional **Supabase cloud save**
+- Links to [get a Sensor Box](https://shop.experimentengine.ai/products/sensor-box) and [Experiment Engine](https://www.experimentengine.ai/)
+
+## Cloud session storage (Supabase)
+
+1. Create a project at [supabase.com](https://supabase.com)
+2. Run the SQL in `supabase/migrations/001_sensor_sessions.sql` in the SQL Editor
+3. Copy `.env.example` → `.env` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+
+Sessions auto-save to the cloud when a recording ends (if configured).
 
 ## Requirements
 

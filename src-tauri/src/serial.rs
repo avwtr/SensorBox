@@ -87,23 +87,26 @@ fn port_info(p: serialport::SerialPortInfo) -> PortInfo {
 
     let name_lower = p.port_name.to_lowercase();
     let desc_lower = description.to_lowercase();
-    let ignore = name_lower.contains("bluetooth")
+
+    let is_system = matches!(p.port_type, SerialPortType::PciPort | SerialPortType::BluetoothPort)
+        || name_lower.contains("bluetooth")
         || name_lower.contains("debug-console")
-        || desc_lower.contains("bluetooth")
-        || desc_lower.contains("pci");
+        || name_lower.contains("incoming-port");
 
     let chip_hint = desc_lower.contains("cp210")
         || desc_lower.contains("ch340")
         || desc_lower.contains("ftdi")
         || desc_lower.contains("esp32")
-        || desc_lower.contains("uart bridge")
-        || name_lower.contains("usbserial")
-        || name_lower.contains("usbmodem");
+        || desc_lower.contains("uart bridge");
+
+    // Only flag USB bridges that match known Sensor Box chips / vendor IDs
+    let likely_sensor_box =
+        !is_system && matches!(p.port_type, SerialPortType::UsbPort(_)) && (likely_usb || chip_hint);
 
     PortInfo {
         name: p.port_name,
         description,
-        likely_sensor_box: !ignore && (likely_usb || chip_hint),
+        likely_sensor_box,
         is_callout,
         vid,
         pid,

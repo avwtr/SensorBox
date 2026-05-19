@@ -27,7 +27,12 @@ export interface SerialPortInfo {
   pid?: number;
 }
 
-export type AppScreen = "landing" | "connect" | "session" | "export";
+export type AppScreen =
+  | "welcome"
+  | "configure"
+  | "connect"
+  | "session"
+  | "export";
 
 export interface RecordingSession {
   id: string;

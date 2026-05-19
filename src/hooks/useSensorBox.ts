@@ -1,7 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { pickRecommendedPort } from "../lib/portDetection";
+import {
+  getAutoSelectPort,
+  isLikelySensorBoxPort,
+} from "../lib/portDetection";
 import { parseSensorData } from "../lib/sensorParser";
 import type {
   SensorConnectionStatus,
@@ -19,24 +22,32 @@ export function useSensorBox() {
   const lastUiUpdate = useRef(0);
   const userPickedPort = useRef(false);
 
-  const applyRecommendedPort = useCallback((list: SerialPortInfo[]) => {
+  const detectedPort = getAutoSelectPort(ports);
+
+  const applyAutoSelect = useCallback((list: SerialPortInfo[]) => {
     if (userPickedPort.current) return;
-    const recommended = pickRecommendedPort(list);
-    if (recommended) setSelectedPort(recommended.name);
+    const auto = getAutoSelectPort(list);
+    setSelectedPort((prev) => {
+      if (auto) return auto.name;
+      if (prev && list.some((p) => p.name === prev && isLikelySensorBoxPort(p))) {
+        return prev;
+      }
+      return "";
+    });
   }, []);
 
   const refreshPorts = useCallback(async () => {
     try {
       const list = await invoke<SerialPortInfo[]>("list_serial_ports");
       setPorts(list);
-      applyRecommendedPort(list);
+      applyAutoSelect(list);
     } catch (e) {
       setStatus((s) => ({
         ...s,
         error: e instanceof Error ? e.message : String(e),
       }));
     }
-  }, [applyRecommendedPort]);
+  }, [applyAutoSelect]);
 
   const selectPort = useCallback((name: string) => {
     userPickedPort.current = true;
@@ -45,7 +56,7 @@ export function useSensorBox() {
 
   useEffect(() => {
     void refreshPorts();
-    const id = window.setInterval(() => void refreshPorts(), 3000);
+    const id = window.setInterval(() => void refreshPorts(), 2500);
     return () => clearInterval(id);
   }, [refreshPorts]);
 
@@ -94,8 +105,12 @@ export function useSensorBox() {
   }, []);
 
   const connect = useCallback(async () => {
-    if (!selectedPort) {
-      setStatus((s) => ({ ...s, error: "Select a serial port first." }));
+    const port = ports.find((p) => p.name === selectedPort);
+    if (!port || !isLikelySensorBoxPort(port)) {
+      setStatus((s) => ({
+        ...s,
+        error: "Plug in your Sensor Box via USB — no device detected yet.",
+      }));
       return false;
     }
     try {
@@ -114,7 +129,7 @@ export function useSensorBox() {
       });
       return false;
     }
-  }, [selectedPort]);
+  }, [selectedPort, ports]);
 
   const disconnect = useCallback(async () => {
     try {
@@ -126,11 +141,9 @@ export function useSensorBox() {
     setLiveReading(null);
   }, []);
 
-  const recommendedPort = pickRecommendedPort(ports);
-
   return {
     ports,
-    recommendedPort,
+    detectedPort,
     selectedPort,
     setSelectedPort: selectPort,
     status,
